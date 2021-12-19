@@ -1,0 +1,8 @@
+django-cassandra-engine
+django-redis
+pip-tools
+channels
+channels-redis
+django_channels
+django-extensions
+ipython

@@ -1,9 +1,13 @@
 import json
 
-from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
 
-from .models import Message
+from .models import (
+    # Message,
+    CassandraMessage,
+)
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -17,14 +21,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
-    
+
     async def disconnect(self, close_code):
         # Leave room
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-    
+
     # Receive message from web socket
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -43,7 +47,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'username': username
             }
         )
-    
+
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
@@ -57,4 +61,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, username, room, message):
-        Message.objects.create(username=username, room=room, content=message)
+        result = CassandraMessage.objects.create(username=username, room=room, content=message)
